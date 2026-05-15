@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Galaxy Morphology Classification</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .dashboard-navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 50px;
+            background: rgba(10, 14, 39, 0.7);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 217, 255, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .dashboard-navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .dashboard-logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #ffffff;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: 1px;
+            text-shadow: 0 0 15px rgba(0, 217, 255, 0.5);
+        }
+
+        .dashboard-nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .dashboard-nav-links a {
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            padding: 10px 15px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+            letter-spacing: 0.5px;
+        }
+
+        .dashboard-nav-links a:hover {
+            background: rgba(0, 217, 255, 0.2);
+            color: #00d9ff;
+            box-shadow: 0 0 15px rgba(0, 217, 255, 0.4);
+        }
+
+        .dashboard-nav-links a.logout-link {
+            background: rgba(255, 107, 107, 0.2);
+            border: 1px solid #ff6b6b;
+            color: #ff6b6b;
+        }
+
+        .dashboard-nav-links a.logout-link:hover {
+            background: #ff6b6b;
+            color: #ffffff;
+            box-shadow: 0 0 20px rgba(255, 107, 107, 0.6);
+        }
+
+        .dashboard-user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: #ffffff;
+            font-weight: 600;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+        }
+
+        .dashboard-user-info strong {
+            color: #00d9ff;
+            font-weight: 700;
+        }
+
+        .dashboard-welcome {
+            text-align: center;
+            padding: 40px 20px;
+            animation: slideUp 0.8s ease-out;
+        }
+
+        .dashboard-welcome h1 {
+            font-size: 2.5rem;
+            color: #ffffff;
+            margin: 0 0 10px 0;
+            letter-spacing: 2px;
+            text-shadow: 0 0 20px rgba(0, 217, 255, 0.5);
+        }
+
+        .dashboard-welcome p {
+            font-size: 1.1rem;
+            color: #b0b0b0;
+            margin: 0;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+        }
+
+        .dashboard-content {
+            min-height: calc(100vh - 120px);
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .dashboard-card {
+            background: rgba(10, 14, 39, 0.6);
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(0, 217, 255, 0.25);
+            padding: 50px 45px;
+            border-radius: 20px;
+            max-width: 700px;
+            width: 100%;
+            box-shadow: 0 8px 40px rgba(0, 217, 255, 0.15);
+            animation: slideUp 0.8s ease-out 0.2s backwards;
+        }
+
+        .dashboard-card h2 {
+            font-size: 1.8rem;
+            color: #ffffff;
+            margin: 0 0 20px 0;
+            letter-spacing: 1px;
+            text-shadow: 0 0 15px rgba(0, 217, 255, 0.4);
+        }
+
+        .dashboard-card p {
+            color: #b0b0b0;
+            font-size: 1rem;
+            line-height: 1.6;
+            margin: 0 0 20px 0;
+        }
+
+        .dashboard-btn {
+            padding: 14px 30px;
+            background: linear-gradient(135deg, #00d9ff, #0066ff);
+            color: #000000;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 0 30px rgba(0, 217, 255, 0.4);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .dashboard-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 50px rgba(0, 217, 255, 0.7);
+        }
+
+        .dashboard-btn:active {
+            transform: translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-navbar {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px 20px;
+            }
+
+            .dashboard-navbar-left {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .dashboard-nav-links {
+                flex-wrap: wrap;
+                gap: 15px;
+                width: 100%;
+            }
+
+            .dashboard-welcome h1 {
+                font-size: 1.8rem;
+            }
+
+            .dashboard-card {
+                padding: 30px 25px;
+            }
+        }
+    </style>
+</head>
+<body class="space-bg">
+
+    <!-- DASHBOARD NAVBAR -->
+    <nav class="dashboard-navbar">
+        <div class="dashboard-navbar-left">
+            <a href="{{ url_for('predict') if session.get('user') else url_for('root') }}" class="dashboard-logo">🌌 Galaxy Explorer</a>
+        </div>
+        <div class="dashboard-user-info">
+            <a href="/logout" class="dashboard-nav-links logout-link">Logout</a>
+            <span style="margin-left:12px;color:#ffffff;">👤 <strong>{{ session.get('user', 'User') }}</strong></span>
+        </div>
+    </nav>
+
+    <!-- DASHBOARD CONTENT -->
+    <div class="dashboard-content">
+        <div class="dashboard-card" id="predict">
+            <h2>Classify a Galaxy</h2>
+            <p>Upload an image to classify its morphology: Elliptical, Spiral, or Irregular.</p>
+
+            <form action="/predict" method="post" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 20px;">
+                <div class="file-input-wrapper">
+                    <input type="file" id="image" name="image" accept="image/*" required>
+                    <label for="image" class="file-label">Choose Image</label>
+                </div>
+                <button type="submit" class="dashboard-btn">Analyze</button>
+            </form>
+
+            {% if session.get('history') and session['history']|length > 0 %}
+            <div class="history-section">
+                <h3>Your Session History</h3>
+                <ul class="history-list">
+                    {% for item in session.get('history', []) %}
+                        <li><span class="history-badge">{{ item }}</span></li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predict Galaxy - Galaxy Morphology Classification</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .predict-page-navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 50px;
+            background: rgba(10, 14, 39, 0.7);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 217, 255, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .predict-navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .predict-logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #ffffff;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: 1px;
+            text-shadow: 0 0 15px rgba(0, 217, 255, 0.5);
+        }
+
+        .predict-nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .predict-nav-links a {
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            padding: 10px 15px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+            letter-spacing: 0.5px;
+        }
+
+        .predict-nav-links a:hover {
+            background: rgba(0, 217, 255, 0.2);
+            color: #00d9ff;
+            box-shadow: 0 0 15px rgba(0, 217, 255, 0.4);
+        }
+
+        .predict-nav-links a.logout-link {
+            background: rgba(255, 107, 107, 0.2);
+            border: 1px solid #ff6b6b;
+            color: #ff6b6b;
+        }
+
+        .predict-nav-links a.logout-link:hover {
+            background: #ff6b6b;
+            color: #ffffff;
+            box-shadow: 0 0 20px rgba(255, 107, 107, 0.6);
+        }
+
+        .predict-user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: #ffffff;
+            font-weight: 600;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+        }
+
+        .predict-user-info strong {
+            color: #00d9ff;
+            font-weight: 700;
+        }
+
+        .predict-container {
+            min-height: calc(100vh - 100px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            animation: slideUp 0.8s ease-out;
+        }
+
+        .predict-card {
+            background: rgba(10, 14, 39, 0.65);
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(0, 217, 255, 0.25);
+            padding: 60px 50px;
+            border-radius: 25px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 8px 50px rgba(0, 217, 255, 0.2);
+            text-align: center;
+        }
+
+        .predict-card h1 {
+            font-size: 2.3rem;
+            color: #ffffff;
+            margin: 0 0 15px 0;
+            letter-spacing: 2px;
+            text-shadow: 0 0 20px rgba(0, 217, 255, 0.5);
+        }
+
+        .predict-card p {
+            color: #b0b0b0;
+            font-size: 1rem;
+            margin: 0 0 40px 0;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+        }
+
+        .upload-area {
+            position: relative;
+            margin-bottom: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .upload-input {
+            display: none;
+        }
+
+        .upload-label {
+            display: block;
+            padding: 40px 30px;
+            background: rgba(0, 217, 255, 0.12);
+            border: 3px dashed rgba(0, 217, 255, 0.6);
+            border-radius: 15px;
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+        }
+
+        .upload-label:hover {
+            background: rgba(0, 217, 255, 0.22);
+            border-color: #00d9ff;
+            box-shadow: 0 0 30px rgba(0, 217, 255, 0.4);
+        }
+
+        .upload-input:focus + .upload-label {
+            background: rgba(0, 217, 255, 0.22);
+            border-color: #00d9ff;
+            box-shadow: 0 0 30px rgba(0, 217, 255, 0.4);
+        }
+
+        .image-preview {
+            display: none;
+            margin: 20px 0;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(0, 217, 255, 0.3);
+            border: 2px solid rgba(0, 217, 255, 0.3);
+            max-height: 300px;
+        }
+
+        .image-preview img {
+            max-width: 100%;
+            max-height: 300px;
+            display: block;
+        }
+
+        .predict-btn {
+            padding: 16px 45px;
+            background: linear-gradient(135deg, #00d9ff, #0066ff);
+            color: #000000;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            box-shadow: 0 0 30px rgba(0, 217, 255, 0.4);
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .predict-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 50px rgba(0, 217, 255, 0.7);
+        }
+
+        .predict-btn:active {
+            transform: translateY(0);
+        }
+
+        .predict-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            box-shadow: 0 0 15px rgba(0, 217, 255, 0.2);
+        }
+
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .spinner {
+            border: 4px solid rgba(0, 217, 255, 0.2);
+            border-top: 4px solid #00d9ff;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: #00d9ff;
+            font-weight: 700;
+            font-size: 1.1rem;
+            text-shadow: 0 0 15px rgba(0, 217, 255, 0.6);
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .error-message {
+            background: rgba(255, 107, 107, 0.15);
+            border: 2px solid #ff6b6b;
+            border-radius: 12px;
+            padding: 15px 20px;
+            color: #ff6b6b;
+            font-weight: 600;
+            display: none;
+            margin: 15px 0 0 0;
+            animation: slideDown 0.4s ease-out;
+        }
+
+        .error-message.show {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        {% if error %}
+        .error-message.server-error {
+            display: flex;
+        }
+        {% endif %}
+
+        .file-info {
+            color: #b0b0b0;
+            font-size: 0.9rem;
+            margin-top: 15px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+        }
+
+        @media (max-width: 768px) {
+            .predict-page-navbar {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px 20px;
+            }
+
+            .predict-navbar-left {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .predict-nav-links {
+                flex-wrap: wrap;
+                gap: 15px;
+                width: 100%;
+            }
+
+            .predict-card {
+                padding: 40px 25px;
+            }
+
+            .predict-card h1 {
+                font-size: 1.8rem;
+            }
+
+            .upload-label {
+                padding: 30px 20px;
+                font-size: 0.95rem;
+            }
+        }
+    </style>
+</head>
+<body class="space-bg">
+
+    <!-- PREDICT NAVBAR -->
+    <nav class="predict-page-navbar">
+        <div class="predict-navbar-left">
+            <a href="{{ url_for('predict') if session.get('user') else url_for('root') }}" class="predict-logo">🌌 Galaxy Explorer</a>
+        </div>
+        <div class="predict-user-info">
+            <a href="/logout" class="predict-nav-links logout-link">Logout</a>
+            <span style="margin-left:12px;color:#ffffff;">👤 <strong>{{ session.get('user', 'User') }}</strong></span>
+        </div>
+    </nav>
+
+    <!-- PREDICT CONTAINER -->
+    <div class="predict-container">
+        <div class="predict-card">
+            <h1>Upload Image</h1>
+            <p>Provide a galaxy image for morphology classification.</p>
+
+            <form id="predict-form" enctype="multipart/form-data" method="POST" action="/predict">
+                <div class="upload-area">
+                    <input type="file" id="galaxy-image" name="image" accept="image/*" class="upload-input" required>
+                    <label for="galaxy-image" class="upload-label">
+                        📸 Click to upload or drag & drop
+                    </label>
+                    <div class="image-preview" id="image-preview">
+                        <img id="preview-img" src="" alt="Preview">
+                    </div>
+                    <div class="file-info" id="file-info"></div>
+                </div>
+
+                {% if error %}
+                <div class="error-message server-error">
+                    <span>⚠</span>
+                    {{ error }}
+                </div>
+                {% endif %}
+
+                <div class="error-message" id="client-error"></div>
+
+                <button type="submit" class="predict-btn" id="predict-btn">Analyze</button>
+
+                <div class="loading-spinner" id="loading-spinner">
+                    <div class="spinner"></div>
+                    <p class="loading-text">Analyzing Deep Space Data…</p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('galaxy-image');
+        const uploadLabel = document.querySelector('.upload-label');
+        const imagePreview = document.getElementById('image-preview');
+        const previewImg = document.getElementById('preview-img');
+        const fileInfo = document.getElementById('file-info');
+        const predictBtn = document.getElementById('predict-btn');
+        const loadingSpinner = document.getElementById('loading-spinner');
+        const clientError = document.getElementById('client-error');
+        const predictForm = document.getElementById('predict-form');
+
+        // File input change handler
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                // Validate file type
+                if (!file.type.startsWith('image/')) {
+                    showError('Please select a valid image file (JPG, PNG, etc.)');
+                    fileInput.value = '';
+                    return;
+                }
+
+                // Validate file size (max 10MB)
+                if (file.size > 10 * 1024 * 1024) {
+                    showError('File size must be less than 10MB');
+                    fileInput.value = '';
+                    return;
+                }
+
+                // Show preview
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    imagePreview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+
+                // Show file info
+                const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
+                fileInfo.textContent = `📁 ${file.name} (${fileSizeMB} MB)`;
+                clientError.classList.remove('show');
+            }
+        });
+
+        // Drag and drop handlers
+        uploadLabel.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            uploadLabel.style.background = 'rgba(0, 217, 255, 0.22)';
+            uploadLabel.style.borderColor = '#00d9ff';
+        });
+
+        uploadLabel.addEventListener('dragleave', function() {
+            uploadLabel.style.background = 'rgba(0, 217, 255, 0.12)';
+            uploadLabel.style.borderColor = 'rgba(0, 217, 255, 0.6)';
+        });
+
+        uploadLabel.addEventListener('drop', function(e) {
+            e.preventDefault();
+            uploadLabel.style.background = 'rgba(0, 217, 255, 0.12)';
+            uploadLabel.style.borderColor = 'rgba(0, 217, 255, 0.6)';
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                const event = new Event('change', { bubbles: true });
+                fileInput.dispatchEvent(event);
+            }
+        });
+
+        // Form submission
+        predictForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (!fileInput.files || fileInput.files.length === 0) {
+                showError('Please select an image file');
+                return;
+            }
+
+            // Show loading state
+            predictBtn.disabled = true;
+            loadingSpinner.style.display = 'block';
+            clientError.classList.remove('show');
+
+            // Submit form
+            predictForm.submit();
+        });
+
+        function showError(message) {
+            clientError.innerHTML = `<span>⚠</span> ${message}`;
+            clientError.classList.add('show');
+        }
+    </script>
+
+</body>
+</html>

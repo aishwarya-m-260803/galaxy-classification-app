@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galaxy Prediction Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="space-bg">
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <h2 class="logo"><a href="{{ url_for('predict') if session.get('user') else url_for('root') }}" style="color:inherit;text-decoration:none;">🌌 Galaxy Explorer</a></h2>
+        <div class="nav-links">
+            <span class="user-welcome">Welcome, <strong>{{ session.get('user', 'User') }}</strong></span>
+            <a href="/logout" class="nav-btn logout-btn">Logout</a>
+        </div>
+    </nav>
+
+    <!-- DASHBOARD CONTAINER -->
+    <div class="prediction-container">
+        <h1>🛰 Galaxy Morphology Prediction</h1>
+        <p class="dashboard-subtitle">Upload a galaxy image to classify its morphology</p>
+
+        <form action="/predict" method="post" enctype="multipart/form-data" class="prediction-form">
+            <div class="file-input-wrapper">
+                <input type="file" id="image" name="image" accept="image/*" required>
+                <label for="image" class="file-label">
+                    📷 Choose Image
+                </label>
+            </div>
+            <button type="submit" class="predict-btn">Analyze</button>
+        </form>
+
+        {% if session.get('history') and session['history']|length > 0 %}
+        <div class="history-section">
+            <h3>📊 Prediction History</h3>
+            <ul class="history-list">
+                {% for item in session.get('history', []) %}
+                    <li><span class="history-badge">{{ item }}</span></li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+
+</body>
+</html>

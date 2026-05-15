@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Galaxy Morphology Classification</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='auth.css') }}">
+</head>
+<body class="auth-page">
+
+    <!-- BACKGROUND -->
+    <div class="space-background">
+        <div class="stars"></div>
+    </div>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <h2 class="logo"><a href="{{ url_for('predict') if session.get('user') else url_for('root') }}" style="color:inherit;text-decoration:none;">🌌 Galaxy Explorer</a></h2>
+        <div class="nav-links">
+            <a href="{{ url_for('root') }}" class="nav-btn">Home</a>
+            <a href="/register" class="nav-btn" style="margin-left:8px;">Register</a>
+        </div>
+    </nav>
+
+    <!-- LOGIN CONTAINER -->
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                    <h1 class="auth-title glow-cyan">Login</h1>
+                    <p class="auth-subtitle">Sign in to access the prediction tool</p>
+            </div>
+
+            <form method="POST" class="auth-form">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" placeholder="Enter your username" required autofocus>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                </div>
+
+                <button type="submit" class="auth-btn">Login</button>
+            </form>
+
+            {% if error %}
+                <div class="error-message">
+                    <span class="error-icon">⚠</span>
+                    {{ error }}
+                </div>
+            {% endif %}
+
+            <div class="auth-footer">
+                <p>Don't have an account? <a href="/register">Register here</a></p>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
