@@ -13,7 +13,7 @@ app = Flask(__name__)
 app.secret_key = "galaxy_secret_key"
 
 # Load model
-model = tf.keras.models.load_model("galaxy_resnet_model.h5")
+model = tf.keras.models.load_model("model/galaxy_resnet_model.h5")
 classes = ["Elliptical", "Spiral", "Irregular"]
 
 # Path to users database
